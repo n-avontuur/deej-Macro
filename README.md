@@ -3,6 +3,7 @@
 
 # Deej MacroPad
 
+![Deej MacroPad](Readme_Assets\Rendering1.JPG)
 # <p align="center"> `This project is a work in progress` </p>
 Deej MacroPad is a customizable open-source hardware volume mixer and macro pad designed for Windows ~~(and Linux)~~ PCs. Based on the original Deej project, this version adds additional functionality such as macro keys and a screen, creating a device similar to a StreamDeck. It lets you control the volumes of different apps and execute macros seamlessly using real-life sliders and buttons.
 
@@ -10,7 +11,6 @@ Deej MacroPad is a customizable open-source hardware volume mixer and macro pad 
 
 **[Download the latest release](https://github.com/omriharel/deej/releases/latest) | [Video demonstration](https://youtu.be/VoByJ4USMr8) | [Build video by Tech Always](https://youtu.be/x2yXbFiiAeI)** -->
 
-![Deej MacroPad](Readme_Assets\Rendering1.JPG)
 <!-- > **_New:_** [work-in-progress Deej FAQ](./docs/faq/faq.md)! -->
 
 ## Table of Contents
@@ -41,9 +41,6 @@ Deej MacroPad is a customizable open-source hardware volume mixer and macro pad 
 ## About The Project
 
 This project is derived from the Deej project by Omri Harel. It is an awesome project for controlling the audio of specific or multiple applications on Windows and Linux. This version enhances the original Deej by adding macro keys and a screen, offering extended functionality similar to a StreamDeck.\
-
-
-
 
 ### Features
 
@@ -136,10 +133,11 @@ slider_mapping:
   - [ ] Add sharing between pc and arduino.
 - [ ] Combine two-way communication and config
 - [ ] Release executable 
+- [ ] _Maybe creating an linux version_
 
 ## Build Your Own
-If you want to build your own you could use the following Bill of Materials.
-Also use the Arduino code that is defined in [Arduino\Screen-Encoders-Keys](arduino\Screen-Encoders-Keys) 
+If you want to build your own you could use the following Bill of Materials and the Arduino code that is defined in [Arduino\Screen-Encoders-Keys](arduino\Screen-Encoders-Keys).\
+Then run the [build-all.bat](pkg\deej\scripts\windows\build-all.bat) script in :pkg\deej\scripts\windows\
 
 ### Bill of Materials
 
