@@ -109,24 +109,10 @@ func (sio *SerialIO) Start() error {
 	namedLogger.Infow("Connected", "conn", sio.conn)
 	sio.connected = true
 
-<<<<<<< HEAD
+	sio.initializeConnection()
+
 	// Start reading from the connection
 	go sio.resumeReading()
-=======
-	// read lines or await a stop (go func stays running in the background running)
-	go func() {
-		connReader := bufio.NewReader(sio.conn)
-		lineChannel := sio.readLine(namedLogger, connReader)
-		for {
-			select {
-			case <-sio.stopChannel:
-				sio.close(namedLogger)
-			case line := <-lineChannel:
-				sio.handleLine(namedLogger, line)
-			}
-		}
-	}()
->>>>>>> 16434fe (No idea what this is at all)
 
 	return nil
 }
@@ -230,7 +216,6 @@ func (sio *SerialIO) readLine(logger *zap.SugaredLogger, reader *bufio.Reader) c
 	return ch
 }
 
-<<<<<<< HEAD
 func (sio *SerialIO) sendLine(line string) error {
 	if !sio.connected {
 		return errors.New("serial: not connected")
@@ -270,9 +255,6 @@ func (sio *SerialIO) resumeReading() {
 
 func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 	var encoderLines []string
-=======
-func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
->>>>>>> 16434fe (No idea what this is at all)
 
 	// this function receives an unsanitized line which is guaranteed to end with LF,
 	// but most lines will end with CRLF. it may also have garbage instead of
@@ -290,7 +272,6 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 
 	// split on pipe (|), this gives a slice of numerical strings between "0" and "1023"
 	splitLine := strings.Split(line, "|")
-<<<<<<< HEAD
 
 	//Added code so that lasted element gets split of. This because the last element is the key for sending commands.
 	if len(splitLine) > 0 {
@@ -314,32 +295,10 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 		logger.Infow("Detected sliders", "amount", numberOfMappedSliders)
 		sio.lastKnownNumSliders = numberOfMappedSliders
 		sio.currentSliderPercentValues = make([]float32, numberOfMappedSliders)
-=======
-	numSliders := len(splitLine)
-
-	if len(splitLine) > 0 {
-		//This was to for splitting the command from the slider values
-		lastIdx := len(splitLine) - 1
-		lastElement := splitLine[lastIdx]
-		handleKeyCommand(string(0), lastElement)
-		//remove the last element because this it the key-command
-		if len(splitLine) > 0 {
-			SliderLines = splitLine[:len(splitLine)-1]
-		}
-	}
-
-	// update our slider count, if needed - this will send slider move events for all
-	if numSliders != sio.lastKnownNumSliders {
-		logger.Infow("Detected sliders", "amount", numSliders)
-		sio.lastKnownNumSliders = numSliders
-		sio.currentSliderPercentValues = make([]float32, numSliders)
-
->>>>>>> 16434fe (No idea what this is at all)
 		// reset everything to be an impossible value to force the slider move event later
 		for idx := range sio.currentSliderPercentValues {
 			sio.currentSliderPercentValues[idx] = -1.0
 		}
-<<<<<<< HEAD
 		fmt.Printf("last know number of sliders : %f", sio.currentSliderPercentValues)
 	}
 
@@ -351,16 +310,6 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 		if error != nil {
 			return
 		}
-=======
-	}
-
-	// for each slider:
-	moveEvents := []SliderMoveEvent{}
-	for sliderIdx, stringValue := range SliderLines { // changed from "splitline" to only sliders "SliderLines"
-
-		// convert string values to integers ("1023" -> 1023)
-		number, _ := strconv.Atoi(stringValue)
->>>>>>> 16434fe (No idea what this is at all)
 
 		// turns out the first line could come out dirty sometimes (i.e. "4558|925|41|643|220")
 		// so let's check the first number for correctness just in case
@@ -377,7 +326,6 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 
 		// if sliders are inverted, take the complement of 1.0
 		if sio.deej.config.InvertSliders {
-<<<<<<< HEAD
 			normalizedScalar = normalizedScalar - 1
 		}
 
@@ -396,34 +344,6 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 			return
 		} else {
 			fmt.Printf(" function name is : %s \n", Encoders[sliderIdx].functionName)
-=======
-			normalizedScalar = 1 - normalizedScalar
-		}
-
-		// check if it changes the desired state (could just be a jumpy raw slider value)
-		if util.SignificantlyDifferent(sio.currentSliderPercentValues[sliderIdx], normalizedScalar, sio.deej.config.NoiseReductionLevel) {
-
-			// if it does, update the saved value and create a move event
-			sio.currentSliderPercentValues[sliderIdx] = normalizedScalar
-
-			moveEvents = append(moveEvents, SliderMoveEvent{
-				SliderID:     sliderIdx,
-				PercentValue: normalizedScalar,
-			})
-
-			if sio.deej.Verbose() {
-				logger.Debugw("Slider moved", "event", moveEvents[len(moveEvents)-1])
-			}
-		}
-	}
-
-	// deliver move events if there are any, towards all potential consumers
-	if len(moveEvents) > 0 {
-		for _, consumer := range sio.sliderMoveConsumers {
-			for _, moveEvent := range moveEvents {
-				consumer <- moveEvent
-			}
->>>>>>> 16434fe (No idea what this is at all)
 		}
 	}
 }
@@ -466,4 +386,36 @@ func executeCommand(deej *Deej, commandType, commandValue string) {
 		// Handle unknown command types
 		fmt.Printf("Unknown command type '%s' with value '%s' on Windows\n", commandType, commandValue)
 	}
+}
+
+func (sio *SerialIO) initializeConnection() error {
+	// Access the first page
+	if len(sio.deej.config.Pages) > 0 {
+		firstPage := sio.deej.config.Pages[0]
+		fmt.Printf("First Page Name: %s\n", firstPage.Name)
+		if len(firstPage.Grid) > 0 {
+			fmt.Println("Grid content:")
+			for _, row := range firstPage.Grid {
+				for _, item := range row {
+					fmt.Printf("  Icon: %s, Command: %s\n", item.Icon, item.Command)
+				}
+			}
+		} else if len(firstPage.VolumeControls) > 0 {
+			fmt.Println("Volume controls:")
+			for app, volume := range firstPage.VolumeControls {
+				fmt.Printf("  %s: %d%%\n", app, volume)
+			}
+		}
+	} else {
+		fmt.Println("No pages found.")
+	}
+
+	// Send the line over the serial connection.
+	line := "testing"
+	_, err := sio.conn.Write([]byte(line + "\r\n"))
+	if err != nil {
+		sio.logger.Warnw("Failed to send line to serial", "error", err, "line", line)
+		return err
+	}
+
 }
