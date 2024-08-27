@@ -10,8 +10,7 @@ Deej MacroPad is a customizable open-source hardware volume mixer and macro pad 
 
 **[Download the latest release](https://github.com/omriharel/deej/releases/latest) | [Video demonstration](https://youtu.be/VoByJ4USMr8) | [Build video by Tech Always](https://youtu.be/x2yXbFiiAeI)** -->
 
-<!-- ![Deej MacroPad](assets/build-3d-annotated.png) -->
-
+![Deej MacroPad](Readme_Assets\Rendering1.JPG)
 <!-- > **_New:_** [work-in-progress Deej FAQ](./docs/faq/faq.md)! -->
 
 ## Table of Contents
