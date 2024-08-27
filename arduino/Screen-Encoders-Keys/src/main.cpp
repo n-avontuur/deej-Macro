@@ -27,17 +27,6 @@ int i = 0;
 void loop() {
     // Continuously check for incoming packets and process them
     comm.receivePackage();
-    
-    
-     // Example payload: the string "Spotify"
-    if (i < 3)
-    {
-        char payload[] = "testing";
-        uint8_t payloadLength = strlen(payload);
-        comm.sendPacket(UPDATE_VOLUME, (uint8_t*)payload, payloadLength);
-        i++;
-        delay(500);
-    }
-    
+      
     
 }

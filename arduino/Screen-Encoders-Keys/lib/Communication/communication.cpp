@@ -6,13 +6,13 @@
 #define CMD_DO_SOMETHING 0x01 // Example command
 
 Communication::Communication() {
-    // Initialization code if needed
+    Serial.begin(9600);
 }
 
 void Communication::sendPacket(uint8_t command, uint8_t* payload, uint8_t length) {
-    uint8_t packetLength = length + 2; // Command + CRC
+    uint8_t packetLength = length + 2; // Length for payload + command + CRC
     uint8_t packet[packetLength + 2];  // +2 for header and footer
-    
+
     packet[0] = PACKET_HEADER;
     packet[1] = packetLength;
     packet[2] = command;
@@ -24,17 +24,21 @@ void Communication::sendPacket(uint8_t command, uint8_t* payload, uint8_t length
 
     // Calculate CRC
     crc8.reset();
-    crc8.add(packet + 2, packetLength); // CRC over command and payload
+    crc8.add(packet + 2, packetLength - 1); // CRC over command and payload
     uint8_t crc = crc8.getCRC();
     packet[3 + length] = crc;
 
     // Footer
     packet[4 + length] = PACKET_FOOTER;
 
-    // Send the packet
+    // Print packet contents for debugging
     for (uint8_t i = 0; i < packetLength + 2; i++) {
-        Serial.write(packet[i]);
+        Serial.print("0x");
+        if (packet[i] < 0x10) Serial.print("0");
+        Serial.print(packet[i], HEX);
+        Serial.print(" ");
     }
+    Serial.println();
 }
 
 void Communication::receivePackage() {
@@ -56,12 +60,12 @@ void Communication::receivePackage() {
             case GET_COMMAND:
                 commandByte = receivedByte;
                 payloadIndex = 0;
-                state = (packetLength > 2) ? GET_PAYLOAD : GET_CRC;
+                state = (packetLength > 3) ? GET_PAYLOAD : GET_CRC;
                 break;
 
             case GET_PAYLOAD:
                 payload[payloadIndex++] = receivedByte;
-                if (payloadIndex == packetLength - 2) {  // Command + CRC
+                if (payloadIndex == packetLength - 3) {
                     state = GET_CRC;
                 }
                 break;
@@ -74,41 +78,47 @@ void Communication::receivePackage() {
             case GET_FOOTER:
                 if (receivedByte == PACKET_FOOTER) {
                     crc8.reset();
-                    crc8.add(&commandByte, packetLength - 1); // CRC over command and payload
+                    crc8.add(&packetLength, packetLength - 1); // CRC over length, command, and payload
                     uint8_t calculatedCRC = crc8.getCRC();
                     if (receivedCRC == calculatedCRC) {
-                        processCommand(commandByte, payload, packetLength - 2);
-                        sendAcknowledge(true);
+                        processCommand(commandByte, payload, packetLength - 3);
+                        sendAcknowledge(true); // Should be called here
                     } else {
-                        sendAcknowledge(false);
+                        sendAcknowledge(false); // Should be called here
                     }
                 }
                 state = WAIT_HEADER;
-                packetLength = 0;
-                payloadIndex = 0;
-                commandByte = 0;
-                receivedCRC = 0;
                 break;
         }
     }
 }
 
+
+
+
 void Communication::processCommand(uint8_t command, uint8_t* payload, uint8_t length) {
+    Serial.print("Processing Command: ");
+    Serial.println(command, HEX);
+
     switch (command) {
         case RECEIVED_CONFIG:
+            Serial.println("Received Config Command");
             // Process RECEIVED_CONFIG
             break;
         case UPDATE_VOLUME:
+            Serial.println("Received Update Volume Command");
             // Process UPDATE_VOLUME
             break;
         case CMD_ANOTHER_COMMAND:
+            Serial.println("Received Another Command");
             // Process CMD_ANOTHER_COMMAND
             break;
         // Add more cases as needed
     }
 }
 
+
 void Communication::sendAcknowledge(bool success) {
     uint8_t ackPayload[1] = {success ? 0x01 : 0x00};
-    sendPacket(success ? UPDATE_VOLUME : CMD_ANOTHER_COMMAND, ackPayload, 1);
+    sendPacket(success ? RECEIVED_CONFIG : CMD_ANOTHER_COMMAND, ackPayload, 1);
 }
