@@ -28,13 +28,24 @@ type wcaSession struct {
 
 type masterSession struct {
 	baseSession
-
 	volume *wca.IAudioEndpointVolume
 
 	eventCtx *ole.GUID
 
 	stale bool // when set to true, we should refresh sessions on the next call to SetVolume
 }
+<<<<<<< HEAD
+=======
+type MySessionCommandHandler struct{}
+
+func (ms *MySessionCommandHandler) HandleCommand(command string) {
+	fmt.Println("Handling command:", command)
+}
+
+func (ms *masterSession) GetSessionCommandHandler() SessionCommandHandler {
+	return &MySessionCommandHandler{}
+}
+>>>>>>> 16434fe (No idea what this is at all)
 
 func newWCASession(
 	logger *zap.SugaredLogger,
@@ -196,3 +207,10 @@ func (s *masterSession) String() string {
 func (s *masterSession) markAsStale() {
 	s.stale = true
 }
+<<<<<<< HEAD
+=======
+
+func (s *wcaSession) GetSessionCommandHandler() SessionCommandHandler {
+	return &WindowsSessionCommandHandler{}
+}
+>>>>>>> 16434fe (No idea what this is at all)

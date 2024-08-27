@@ -35,6 +35,17 @@ type masterSession struct {
 	isOutput       bool
 }
 
+type pulseSession struct {
+	baseSession
+
+	processName string
+
+	client *proto.Client
+
+	sinkInputIndex    uint32
+	sinkInputChannels byte
+}
+
 func newPASession(
 	logger *zap.SugaredLogger,
 	client *proto.Client,
@@ -221,4 +232,8 @@ func parseChannelVolumes(volumes []uint32) float32 {
 	}
 
 	return float32(level) / float32(len(volumes)) / float32(maxVolume)
+}
+
+func (s *pulseSession) GetSessionCommandHandler() SessionCommandHandler {
+	return &LinuxSessionCommandHandler{}
 }

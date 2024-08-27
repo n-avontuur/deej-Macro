@@ -109,11 +109,14 @@ func (sio *SerialIO) Start() error {
 	namedLogger.Infow("Connected", "conn", sio.conn)
 	sio.connected = true
 
-	// read lines or await a stop
+<<<<<<< HEAD
+	// Start reading from the connection
+	go sio.resumeReading()
+=======
+	// read lines or await a stop (go func stays running in the background running)
 	go func() {
 		connReader := bufio.NewReader(sio.conn)
 		lineChannel := sio.readLine(namedLogger, connReader)
-
 		for {
 			select {
 			case <-sio.stopChannel:
@@ -123,6 +126,7 @@ func (sio *SerialIO) Start() error {
 			}
 		}
 	}()
+>>>>>>> 16434fe (No idea what this is at all)
 
 	return nil
 }
@@ -226,12 +230,58 @@ func (sio *SerialIO) readLine(logger *zap.SugaredLogger, reader *bufio.Reader) c
 	return ch
 }
 
+<<<<<<< HEAD
+func (sio *SerialIO) sendLine(line string) error {
+	if !sio.connected {
+		return errors.New("serial: not connected")
+	}
+
+	// Stop reading temporarily by closing the current reader.
+	sio.stopChannel <- true
+
+	// Send the line over the serial connection.
+	_, err := sio.conn.Write([]byte(line + "\r\n"))
+	if err != nil {
+		sio.logger.Warnw("Failed to send line to serial", "error", err, "line", line)
+		return err
+	}
+
+	// Resume reading after sending the data.
+	go sio.resumeReading()
+
+	return nil
+}
+
+func (sio *SerialIO) resumeReading() {
+	namedLogger := sio.logger.Named(strings.ToLower(sio.connOptions.PortName))
+	connReader := bufio.NewReader(sio.conn)
+	lineChannel := sio.readLine(namedLogger, connReader)
+
+	for {
+		select {
+		case <-sio.stopChannel:
+			sio.close(namedLogger)
+			return
+		case line := <-lineChannel:
+			sio.handleLine(namedLogger, line)
+		}
+	}
+}
+
 func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
+	var encoderLines []string
+=======
+func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
+>>>>>>> 16434fe (No idea what this is at all)
 
 	// this function receives an unsanitized line which is guaranteed to end with LF,
 	// but most lines will end with CRLF. it may also have garbage instead of
 	// deej-formatted values, so we must check for that! just ignore bad ones
+
+	var SliderLines []string
+
 	if !expectedLinePattern.MatchString(line) {
+		fmt.Printf("Line not matching pattern")
 		return
 	}
 
@@ -240,7 +290,43 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 
 	// split on pipe (|), this gives a slice of numerical strings between "0" and "1023"
 	splitLine := strings.Split(line, "|")
+<<<<<<< HEAD
+
+	//Added code so that lasted element gets split of. This because the last element is the key for sending commands.
+	if len(splitLine) > 0 {
+		//This was to for splitting the command from the slider values
+		lastIdx := len(splitLine) - 1
+		lastElement := splitLine[lastIdx]
+		sio.deej.receiveKey(lastElement)
+		//remove the last element because this it the key-command
+		if len(splitLine) > 0 {
+			encoderLines = splitLine[:len(splitLine)-1]
+		}
+	}
+	numberOfMappedSliders := 0
+	sio.deej.config.SliderMapping.iterate(func(sliderIdx int, slider []string) {
+		numberOfMappedSliders += 1
+	})
+
+	// update our slider count, if needed - this will send slider move events for all
+	if numberOfMappedSliders != sio.lastKnownNumSliders {
+		setupEncoderAmount(numberOfMappedSliders)
+		logger.Infow("Detected sliders", "amount", numberOfMappedSliders)
+		sio.lastKnownNumSliders = numberOfMappedSliders
+		sio.currentSliderPercentValues = make([]float32, numberOfMappedSliders)
+=======
 	numSliders := len(splitLine)
+
+	if len(splitLine) > 0 {
+		//This was to for splitting the command from the slider values
+		lastIdx := len(splitLine) - 1
+		lastElement := splitLine[lastIdx]
+		handleKeyCommand(string(0), lastElement)
+		//remove the last element because this it the key-command
+		if len(splitLine) > 0 {
+			SliderLines = splitLine[:len(splitLine)-1]
+		}
+	}
 
 	// update our slider count, if needed - this will send slider move events for all
 	if numSliders != sio.lastKnownNumSliders {
@@ -248,18 +334,33 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 		sio.lastKnownNumSliders = numSliders
 		sio.currentSliderPercentValues = make([]float32, numSliders)
 
+>>>>>>> 16434fe (No idea what this is at all)
 		// reset everything to be an impossible value to force the slider move event later
 		for idx := range sio.currentSliderPercentValues {
 			sio.currentSliderPercentValues[idx] = -1.0
 		}
+<<<<<<< HEAD
+		fmt.Printf("last know number of sliders : %f", sio.currentSliderPercentValues)
+	}
+
+	// for each slider:
+	for sliderIdx, stringValue := range encoderLines {
+
+		// convert string values to integers ("1023" -> 1023)
+		number, error := strconv.Atoi(stringValue)
+		if error != nil {
+			return
+		}
+=======
 	}
 
 	// for each slider:
 	moveEvents := []SliderMoveEvent{}
-	for sliderIdx, stringValue := range splitLine {
+	for sliderIdx, stringValue := range SliderLines { // changed from "splitline" to only sliders "SliderLines"
 
 		// convert string values to integers ("1023" -> 1023)
 		number, _ := strconv.Atoi(stringValue)
+>>>>>>> 16434fe (No idea what this is at all)
 
 		// turns out the first line could come out dirty sometimes (i.e. "4558|925|41|643|220")
 		// so let's check the first number for correctness just in case
@@ -276,6 +377,26 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 
 		// if sliders are inverted, take the complement of 1.0
 		if sio.deej.config.InvertSliders {
+<<<<<<< HEAD
+			normalizedScalar = normalizedScalar - 1
+		}
+
+		if sio.currentSliderPercentValues[sliderIdx] == normalizedScalar {
+			return
+		}
+
+		if Encoders[sliderIdx].functionName == "controlVolume" {
+			volumeDifference := sio.currentSliderPercentValues[sliderIdx] - normalizedScalar
+			//fmt.Printf("Set new volume %f for slider[%d] \n ", sio.currentSliderPercentValues[sliderIdx], sliderIdx)
+			if volumeDifference <= 5 || volumeDifference >= -5 {
+				Encoders[sliderIdx].function(sio.deej, sliderIdx, normalizedScalar)
+			} else {
+				sio.sendLine("625|625") // Should be extended is not correct now.
+			}
+			return
+		} else {
+			fmt.Printf(" function name is : %s \n", Encoders[sliderIdx].functionName)
+=======
 			normalizedScalar = 1 - normalizedScalar
 		}
 
@@ -302,6 +423,47 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 			for _, moveEvent := range moveEvents {
 				consumer <- moveEvent
 			}
+>>>>>>> 16434fe (No idea what this is at all)
 		}
+	}
+}
+
+func handleKeyCommand(deej *Deej, page string, key string) {
+	// Access the CommandPages field from the CanonicalConfig
+	commandPages := deej.config.CommandPages
+
+	// Check if the requested page exists in the CommandPages map
+	pageCommands, ok := commandPages[page]
+	if !ok {
+		// Handle the case where the page doesn't exist
+		fmt.Printf("Page '%s' not found in CommandPages\n", page)
+		return
+	}
+
+	// Check if the requested key exists in the page's command map
+	command, ok := pageCommands[key]
+	if !ok {
+		// Handle the case where the key doesn't exist
+		fmt.Printf("Key '%d' not found in page '%s'\n", key, page)
+		return
+	}
+
+	// Execute the command
+	executeCommand(deej, command.Type, command.Command)
+}
+
+func executeCommand(deej *Deej, commandType, commandValue string) {
+	switch commandType {
+	case "ConnectBluetooth":
+		// Implement the logic to connect Bluetooth
+		fmt.Printf("Connecting Bluetooth on Windows\n")
+		deej.notifier.Notify("ConnectBluetooth", fmt.Sprintf("Device '%s' has been connected.", commandValue))
+	case "StartApplication":
+		// Implement the logic to start an application
+		fmt.Printf("Starting application '%s' on Windows\n", commandValue)
+		deej.notifier.Notify("Application Launched", fmt.Sprintf("Application '%s' has been launched.", commandValue))
+	default:
+		// Handle unknown command types
+		fmt.Printf("Unknown command type '%s' with value '%s' on Windows\n", commandType, commandValue)
 	}
 }

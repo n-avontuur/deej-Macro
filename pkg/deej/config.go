@@ -13,9 +13,29 @@ import (
 	"github.com/omriharel/deej/pkg/deej/util"
 )
 
+<<<<<<< HEAD
+// This is the page mapping type, so that commandos can be switched.
+type Commands struct {
+	Commando string `yaml:"Commando"`
+	Type     string `yaml:"type"`
+}
+type Page struct {
+	PageNr   int              `yaml:"page_nr"`
+	Commands map[int]Commands `yaml:"commands"`
+=======
+type Command struct {
+	Type    string
+	Command string
+>>>>>>> 16434fe (No idea what this is at all)
+}
+
 // CanonicalConfig provides application-wide access to configuration fields,
 // as well as loading/file watching logic for deej's configuration file
 type CanonicalConfig struct {
+<<<<<<< HEAD
+	key_commandos []Page `yaml:"key_commandos"`
+=======
+>>>>>>> 16434fe (No idea what this is at all)
 	SliderMapping *sliderMap
 
 	ConnectionInfo struct {
@@ -35,6 +55,11 @@ type CanonicalConfig struct {
 
 	userConfig     *viper.Viper
 	internalConfig *viper.Viper
+<<<<<<< HEAD
+=======
+
+	CommandPages map[string]map[int]Command
+>>>>>>> 16434fe (No idea what this is at all)
 }
 
 const (
@@ -48,11 +73,19 @@ const (
 
 	configType = "yaml"
 
+<<<<<<< HEAD
+=======
+	configKeyCMDPages            = "key_commandos"
+>>>>>>> 16434fe (No idea what this is at all)
 	configKeySliderMapping       = "slider_mapping"
 	configKeyInvertSliders       = "invert_sliders"
 	configKeyCOMPort             = "com_port"
 	configKeyBaudRate            = "baud_rate"
 	configKeyNoiseReductionLevel = "noise_reduction"
+<<<<<<< HEAD
+	configKeykey_commandos       = "key_commandos"
+=======
+>>>>>>> 16434fe (No idea what this is at all)
 
 	defaultCOMPort  = "COM4"
 	defaultBaudRate = 9600
@@ -85,10 +118,18 @@ func NewConfig(logger *zap.SugaredLogger, notifier Notifier) (*CanonicalConfig, 
 	userConfig.SetConfigType(configType)
 	userConfig.AddConfigPath(userConfigPath)
 
+<<<<<<< HEAD
+=======
+	userConfig.SetDefault(configKeyCMDPages, map[string]interface{}{})
+>>>>>>> 16434fe (No idea what this is at all)
 	userConfig.SetDefault(configKeySliderMapping, map[string][]string{})
 	userConfig.SetDefault(configKeyInvertSliders, false)
 	userConfig.SetDefault(configKeyCOMPort, defaultCOMPort)
 	userConfig.SetDefault(configKeyBaudRate, defaultBaudRate)
+<<<<<<< HEAD
+	userConfig.SetDefault(configKeykey_commandos, map[string][]string{})
+=======
+>>>>>>> 16434fe (No idea what this is at all)
 
 	internalConfig := viper.New()
 	internalConfig.SetConfigName(internalConfigName)
@@ -217,6 +258,23 @@ func (cc *CanonicalConfig) StopWatchingConfigFile() {
 
 func (cc *CanonicalConfig) populateFromVipers() error {
 
+<<<<<<< HEAD
+=======
+	cc.CommandPages = make(map[string]map[int]Command)
+	cmdPages := cc.userConfig.GetStringMap(configKeyCMDPages)
+
+	for page, commands := range cmdPages {
+		cmdMap := make(map[int]Command)
+		for key, cmd := range commands.(map[interface{}]interface{}) {
+			cmdMap[int(key.(int64))] = Command{
+				Type:    cmd.(map[interface{}]interface{})["type"].(string),
+				Command: cmd.(map[interface{}]interface{})["command"].(string),
+			}
+		}
+		cc.CommandPages[page] = cmdMap
+	}
+
+>>>>>>> 16434fe (No idea what this is at all)
 	// merge the slider mappings from the user and internal configs
 	cc.SliderMapping = sliderMapFromConfigs(
 		cc.userConfig.GetStringMapStringSlice(configKeySliderMapping),
@@ -239,11 +297,29 @@ func (cc *CanonicalConfig) populateFromVipers() error {
 	cc.InvertSliders = cc.userConfig.GetBool(configKeyInvertSliders)
 	cc.NoiseReductionLevel = cc.userConfig.GetString(configKeyNoiseReductionLevel)
 
+<<<<<<< HEAD
+	// Debugging: Print raw key_commandos content
+	//rawKeyCommandos := cc.userConfig.Get(configKeykey_commandos)
+	//cc.logger.Debugf("Raw key_commandos content: %v \n ", rawKeyCommandos)
+
+	// Add this line to load CommandPages
+	if err := cc.userConfig.UnmarshalKey(configKeykey_commandos, &cc.key_commandos); err != nil {
+		cc.logger.Warnw("Failed to unmarshal key_commandos", "error", err)
+		return fmt.Errorf("unmarshal key_commandos: %w", err)
+	}
+
+	// Debugging: Print key_commandos
+	//cc.logger.Debugf("Loaded key_commandos: %v", cc.key_commandos)
+
+	return nil
+}
+=======
 	cc.logger.Debug("Populated config fields from vipers")
 
 	return nil
 }
 
+>>>>>>> 16434fe (No idea what this is at all)
 func (cc *CanonicalConfig) onConfigReloaded() {
 	cc.logger.Debug("Notifying consumers about configuration reload")
 
