@@ -1,86 +1,118 @@
-# deej
 
-deej is an **open-source hardware volume mixer** for Windows and Linux PCs. It lets you use real-life sliders (like a DJ!) to **seamlessly control the volumes of different apps** (such as your music player, the game you're playing and your voice chat session) without having to stop what you're doing.
+---
 
-**Join the [deej Discord server](https://discord.gg/nf88NJu) if you need help or have any questions!**
+# Deej MacroPad
 
-[![Discord](https://img.shields.io/discord/702940502038937667?logo=discord)](https://discord.gg/nf88NJu)
+# <p align="center"> `This project is a work in progress` </p>
+Deej MacroPad is a customizable open-source hardware volume mixer and macro pad designed for Windows ~~(and Linux)~~ PCs. Based on the original Deej project, this version adds additional functionality such as macro keys and a screen, creating a device similar to a StreamDeck. It lets you control the volumes of different apps and execute macros seamlessly using real-life sliders and buttons.
 
-> **_New:_** [work-in-progress deej FAQ](./docs/faq/faq.md)!
+<!-- [![Discord](https://img.shields.io/discord/702940502038937667?logo=discord)](https://discord.gg/nf88NJu)
 
-deej consists of a [lightweight desktop client](#features) written in Go, and an Arduino-based hardware setup that's simple and cheap to build. [**Check out some versions built by members of our community!**](./community.md)
+**[Download the latest release](https://github.com/omriharel/deej/releases/latest) | [Video demonstration](https://youtu.be/VoByJ4USMr8) | [Build video by Tech Always](https://youtu.be/x2yXbFiiAeI)** -->
 
-**[Download the latest release](https://github.com/omriharel/deej/releases/latest) | [Video demonstration](https://youtu.be/VoByJ4USMr8) | [Build video by Tech Always](https://youtu.be/x2yXbFiiAeI)**
+<!-- ![Deej MacroPad](assets/build-3d-annotated.png) -->
 
-![deej](assets/build-3d-annotated.png)
+<!-- > **_New:_** [work-in-progress Deej FAQ](./docs/faq/faq.md)! -->
 
-> _**Psst!** [No 3D printer? No problem!](./assets/build-shoebox.jpg)_ You can build deej on some cardboard, a shoebox or even a breadboard :)
+## Table of Contents
 
-## Table of contents
+- [Deej MacroPad](#deej-macropad)
+- [ `This project is a work in progress` ](#-this-project-is-a-work-in-progress-)
+  - [Table of Contents](#table-of-contents)
+  - [About The Project](#about-the-project)
+    - [Features](#features)
+    - [Built With](#built-with)
+    - [Hardware Components](#hardware-components)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+  - [How It Works](#how-it-works)
+    - [Hardware](#hardware)
+      - [Schematic](#schematic)
+    - [Software](#software)
+  - [Slider Mapping (Configuration)](#slider-mapping-configuration)
+      - [EXAMPLE](#example)
+  - [Roadmap](#roadmap)
+  - [Build Your Own](#build-your-own)
+    - [Bill of Materials](#bill-of-materials)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Acknowledgments](#acknowledgments)
 
-- [Features](#features)
-- [How it works](#how-it-works)
-  - [Hardware](#hardware)
-    - [Schematic](#schematic)
-  - [Software](#software)
-- [Slider mapping (configuration)](#slider-mapping-configuration)
-- [Build your own!](#build-your-own)
-  - [FAQ](#faq)
-  - [Build video](#build-video)
-  - [Bill of Materials](#bill-of-materials)
-  - [Thingiverse collection](#thingiverse-collection)
-  - [Build procedure](#build-procedure)
-- [How to run](#how-to-run)
-  - [Requirements](#requirements)
-  - [Download and installation](#download-and-installation)
-  - [Building from source](#building-from-source)
-- [Community](#community)
-- [License](#license)
+## About The Project
 
-## Features
+This project is derived from the Deej project by Omri Harel. It is an awesome project for controlling the audio of specific or multiple applications on Windows and Linux. This version enhances the original Deej by adding macro keys and a screen, offering extended functionality similar to a StreamDeck.\
 
-deej is written in Go and [distributed](https://github.com/omriharel/deej/releases/latest) as a portable (no installer needed) executable.
 
-- Bind apps to different sliders
-  - Bind multiple apps per slider (i.e. one slider for all your games)
-  - Bind the master channel
-  - Bind "system sounds" (on Windows)
-  - Bind specific audio devices by name (on Windows)
+
+
+### Features
+
+Deej MacroPad is written in Go and is distributed as a portable (no installer needed) executable. It allows you to:
+
+- Bind apps to different encoder
+  - Bind multiple apps per encoder
+  - Bind the master channel, microphone input level, and specific audio devices
   - Bind currently active app (on Windows)
-  - Bind all other unassigned apps
 - Control your microphone's input level
+- Execute macros with additional buttons
+- Display information on a connected screen
 - Lightweight desktop client, consuming around 10MB of memory
-- Runs from your system tray
-- Helpful notifications to let you know if something isn't working
+- Runs from your system tray with helpful notifications
 
-> **Looking for the older Python version?** It's no longer maintained, but you can always find it in the [`legacy-python` branch](https://github.com/omriharel/deej/tree/legacy-python).
+### Built With
 
-## How it works
+- [![Go][Go.js]][Golang-url]
+- [![EasyEDA][EasyEDA.js]][EasyEDA-url]
+- [![WOKWI][wokwi.js]][Wokwi-url]
+  - Andriod simulator : [Arduino uno](https://wokwi.com/projects/new/arduino-uno)
+  - Diagram used for basic screen testing: [File](.\Readme_Assets\WOKWI_ArdionoUno_diagram.json) \
+   <img src="Readme_Assets\Arduino simulator hardware setup.png" alt="Logo" width="200" height="200" >
+<!-- - [![Arduino][Arduino.js]][Arduino-url] -->
+
+### Hardware Components
+
+All components for this hobby project were sourced from AliExpress:
+
+- **Cherry-like keys:** [AliExpress](https://nl.aliexpress.com/item/1005001771511348.html)
+- **I2C OLED screen (2.42 inch):** [AliExpress](https://nl.aliexpress.com/item/1005006345983913.html)
+
+## Getting Started
+
+### Prerequisites
+
+- Windows ~~(or Linux)~~ PC
+- Arduino Nano, Pro Micro, or Uno board
+
+### Installation
+
+1. Clone the repo
+   <!-- ```sh
+   git clone https://github.com/n-avontuur/deej.git
+   ``` -->
+<!-- 2. Download and install the latest [release](https://github.com/omriharel/deej/releases/latest). -->
+
+## How It Works
 
 ### Hardware
 
-- The sliders are connected to 5 (or as many as you like) analog pins on an Arduino Nano/Uno board. They're powered from the board's 5V output (see schematic)
-- The board connects via a USB cable to the PC
+The Encoders and buttons are connected to the analog pins on an Arduino board, which then connects to your PC via USB. The screen is connected using the I2C interface.
 
 #### Schematic
 
-![Hardware schematic](assets/schematic.png)
+I created my own PCB with the following schematic:
+
+![Product Image](assets/schematic.png)
 
 ### Software
 
-- The code running on the Arduino board is a [C program](./arduino/deej-5-sliders-vanilla/deej-5-sliders-vanilla.ino) constantly writing current slider values over its serial interface
-- The PC runs a lightweight [Go client](./pkg/deej/cmd/main.go) in the background. This client reads the serial stream and adjusts app volumes according to the given configuration file
+The Arduino board runs a C program that writes current slider and button values over its serial interface. The PC runs a lightweight Go client that reads this data and adjusts app volumes or triggers macros according to your configuration.
 
-## Slider mapping (configuration)
+## Slider Mapping (Configuration)
 
-deej uses a simple YAML-formatted configuration file named [`config.yaml`](./config.yaml), placed alongside the deej executable.
+Deej MacroPad uses a YAML configuration file named `config.yaml`, placed alongside the executable. This file determines which applications, commands and devices are mapped to which sliders and buttons.
 
-The config file determines which applications (and devices) are mapped to which sliders, and which parameters to use for the connection to the Arduino board, as well as other user preferences.
-
-**This file auto-reloads when its contents are changed, so you can change application mappings on-the-fly without restarting deej.**
-
-It looks like this:
-
+#### EXAMPLE 
 ```yaml
 slider_mapping:
   0: master
@@ -90,123 +122,84 @@ slider_mapping:
     - pathofexile_x64.exe
     - rocketleague.exe
   4: discord.exe
-
-# set this to true if you want the controls inverted (i.e. top is 0%, bottom is 100%)
-invert_sliders: false
-
-# settings for connecting to the arduino board
-com_port: COM4
-baud_rate: 9600
-
-# adjust the amount of signal noise reduction depending on your hardware quality
-# supported values are "low" (excellent hardware), "default" (regular hardware) or "high" (bad, noisy hardware)
-noise_reduction: default
 ```
 
-- `master` is a special option to control the master volume of the system _(uses the default playback device)_
-- `mic` is a special option to control your microphone's input level _(uses the default recording device)_
-- `deej.unmapped` is a special option to control all apps that aren't bound to any slider ("everything else")
-- On Windows, `deej.current` is a special option to control whichever app is currently in focus
-- On Windows, you can specify a device's full name, i.e. `Speakers (Realtek High Definition Audio)`, to bind that device's level to a slider. This doesn't conflict with the default `master` and `mic` options, and works for both input and output devices.
-  - Be sure to use the full device name, as seen in the menu that comes up when left-clicking the speaker icon in the tray menu
-- `system` is a special option on Windows to control the "System sounds" volume in the Windows mixer
-- All names are case-**in**sensitive, meaning both `chrome.exe` and `CHROME.exe` will work
-- You can create groups of process names (using a list) to either:
-    - control more than one app with a single slider
-    - choose whichever process in the group that's currently running (i.e. to have one slider control any game you're playing)
+## Roadmap
 
-## Build your own!
+- [X] Code for hardware 
+  - [X] Add macrokeys
+  - [X] Add encoders
+  - [ ] Add screen 
+- [ ] Two-way communication
+- [ ] Create config
+  - [ ] Add Commands 
+  - [ ] Add Pages readable 
+  - [ ] Add sharing between pc and arduino.
+- [ ] Combine two-way communication and config
+- [ ] Release executable 
 
-Building deej is very simple. You only need a few relatively cheap parts - it's an excellent starter project (and my first Arduino project, personally). Remember that if you need any help or have a question that's not answered here, you can always [join the deej Discord server](https://discord.gg/nf88NJu).
-
-Build deej for yourself, or as an awesome gift for your gaming buddies!
-
-### FAQ
-
-I've started a highly focused effort of writing a proper FAQ page for deej, covering many basic and advanced topics.
-
-It is still _very much a work-in-progress_, but I'm happy to [share it in its current state](./docs/faq/faq.md) in hopes that it at least covers some questions you might have.
-
-FAQ feedback in our [community Discord](https://discord.gg/nf88NJu) is strongly encouraged :)
-
-### Build video
-
-In case you prefer watching to reading, Charles from the [**Tech Always**](https://www.youtube.com/c/TechAlways) YouTube channel has made [**a fantastic video**](https://youtu.be/x2yXbFiiAeI) that covers the basics of building deej for yourself, including parts, costs, assembly and software. I highly recommend checking it out!
+## Build Your Own
+If you want to build your own you could use the following Bill of Materials.
+Also use the Arduino code that is defined in [Arduino\Screen-Encoders-Keys](arduino\Screen-Encoders-Keys) 
 
 ### Bill of Materials
 
-- An Arduino Nano, Pro Micro or Uno board
-  - I officially recommend using a Nano or a Pro Micro for their smaller form-factor, friendlier USB connectors and more analog pins. Plus they're cheaper
-  - You can also use any other development board that has a Serial over USB interface
-- A few slider potentiometers, up to your number of free analog pins (the cheaper ones cost around 1-2 USD each, and come with a standard 10K Ohm variable resistor. These _should_ work just fine for this project)
-  - **Important:** make sure to get **linear** sliders, not logarithmic ones! Check the product description
-  - You can also use circular knobs if you like
-- Some wires
-- Any kind of box to hold everything together. **You don't need a 3D printer for this project!** It works fantastically with just a piece of cardboard or a shoebox. That being said, if you do have one, read on...
+- 1X Arduino Nano, Pro Micro, or Uno board
+- 2X  Encoders
+- 12X Buttons
+- 1X I2C OLED screen
+- Wires and connectors
+- Enclosure (3D printed or custom-made)
 
-### Thingiverse collection
+<!-- ### Thingiverse Collection
 
-With many different 3D-printed designs being added to our [community showcase](./community.md), it felt right to gather all of them in a Thingiverse collection for you to browse. If you have access to a 3D printer, feel free to use one of the designs in your build.
+Browse community-created 3D designs on [Thingiverse](https://thingiverse.com/omriharel/collections/deej). -->
 
-**[Visit our community-created design collection on Thingiverse!](https://thingiverse.com/omriharel/collections/deej)**
+<!-- ### Build Procedure
 
-> You can also [submit your own](https://discord.gg/nf88NJu) design to be added to the collection. Regardless, if you do upload your design to Thingiverse, _please add a `deej` tag to it so that others can find it more easily_.
+1. Connect components according to the schematic.
+2. Flash the Arduino with the provided sketch.  
+~~3. Run the Deej executable on your PC.~~
+
+## How to Run 
+
+### Windows
 
 
-### Build procedure
+~~Just run the executable.~~
+-->
 
-- Connect everything according to the [schematic](#schematic)
-- Test with a multimeter to be sure your sliders are hooked up correctly
-- Flash the Arduino chip with the sketch in [`arduino\deej-5-sliders-vanilla`](./arduino/deej-5-sliders-vanilla/deej-5-sliders-vanilla.ino)
-  - _Important:_ If you have more or less than 5 sliders, you must edit the sketch to match what you have
-- After flashing, check the serial monitor. You should see a constant stream of values separated by a pipe (`|`) character, e.g. `0|240|1023|0|483`
-  - When you move a slider, its corresponding value should move between 0 and 1023
-- Congratulations, you're now ready to run the deej executable!
+## Contributing
 
-## How to run
-
-### Requirements
-
-#### Windows
-
-- Windows. That's it
-
-#### Linux
-
-- Install `libgtk-3-dev`, `libappindicator3-dev` and `libwebkit2gtk-4.0-dev` for system tray support. Pre-built Linux binaries aren't currently released, so you'll need to [build from source](#building-from-source). If there's demand for pre-built binaries, please [let me know](https://discord.gg/nf88NJu)!
-
-### Download and installation
-
-- Head over to the [releases page](https://github.com/omriharel/deej/releases) and download the [latest version](https://github.com/omriharel/deej/releases/latest)'s executable and configuration file (`deej.exe` and `config.yaml`)
-- Place them in the same directory anywhere on your machine
-- (Optional, on Windows) Create a shortcut to `deej.exe` and copy it to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup` to have deej run on boot
-
-### Building from source
-
-If you'd rather not download a compiled executable, or want to extend deej or modify it to your needs, feel free to clone the repository and build it yourself. All you need is a Go 1.14 (or above) environment on your machine. If you go this route, make sure to check out the [developer scripts](./pkg/deej/scripts).
-
-Like other Go packages, you can also use the `go get` tool: `go get -u github.com/omriharel/deej`. Please note that the package code now resides in the `pkg/deej` directory, and needs to be imported from there if used inside another project.
-
-If you need any help with this, please [join our Discord server](https://discord.gg/nf88NJu).
-
-## Community
-
-[![Discord](https://img.shields.io/discord/702940502038937667?logo=discord)](https://discord.gg/nf88NJu)
-
-deej is a relatively new project, but a vibrant and awesome community is rapidly growing around it. Come hang out with us in the [deej Discord server](https://discord.gg/nf88NJu), or check out a whole bunch of cool and creative builds made by our members in the [community showcase](./community.md).
-
-The server is also a great place to ask questions, suggest features or report bugs (but of course, feel free to use GitHub if you prefer).
-
-### Donations
-
-If you love deej and want to show your support for this project, you can do so using the link below. Please don't feel obligated to donate - building the project and telling your friends about it goes a very long way! Thank you very much.
-
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/omriharel)
-
-### Contributing
-
-Please see [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md).
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. However, as a starting programmer, I am currently not accepting pull requests.
 
 ## License
 
-deej is released under the [MIT license](./LICENSE).
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+
+## Acknowledgments
+
+- [Omri Harel's Deej project](https://github.com/omriharel/deej)
+
+---
+
+This README provides a comprehensive overview of the combined Deej and Deej MacroPad projects, covering all essential aspects from features and hardware components to installation and usage.
+
+
+<!-- Example of making link to images -->
+[product-screenshot]: images/screenshot.png
+
+[WOKWI-url]: https://wokwi.com
+[wokwi.js]: https://img.shields.io/badge/wokwi-black
+
+
+[EasyEDA-url]: https://easyeda.com/
+[EasyEDA.js]: https://img.shields.io/badge/EasyEDA-blue
+
+
+[Arduino.js]:https://img.shields.io/badge/Arduino-green
+[arduino-url]: https://www.arduino.cc/
+
+[Go.js]:https://img.shields.io/badge/Go-blue
+[GoLang-url]: https://golang.org/
