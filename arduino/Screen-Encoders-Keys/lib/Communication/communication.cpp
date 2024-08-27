@@ -1,12 +1,14 @@
-#define PACKET_HEADER 0xAA    // Example header byte
-#define PACKET_FOOTER 0x55    // Example footer byte
+#include "Communication.h"
+#include <CRC8.h>
 
-#define CRC8_POLY  0x07      // Polynomial used for CRC8 calculation
-
+Communication::Communication() {
+    // Initialization code if needed
+}
 
 void Communication::sendPacket(uint8_t command, uint8_t* payload, uint8_t length) {
-    uint8_t packetLength = length + 3; // length + command + CRC + footer
-    uint8_t packet[packetLength + 3];
+    uint8_t packetLength = length + 2; // Command + CRC
+    uint8_t packet[packetLength + 2];  // +2 for header and footer
+    
     packet[0] = PACKET_HEADER;
     packet[1] = packetLength;
     packet[2] = command;
@@ -18,7 +20,7 @@ void Communication::sendPacket(uint8_t command, uint8_t* payload, uint8_t length
 
     // Calculate CRC
     crc8.reset();
-    crc8.add(packet + 1, packetLength); // CRC over length, command, and payload
+    crc8.add(packet + 2, packetLength); // CRC over command and payload
     uint8_t crc = crc8.getCRC();
     packet[3 + length] = crc;
 
@@ -31,26 +33,8 @@ void Communication::sendPacket(uint8_t command, uint8_t* payload, uint8_t length
     }
 }
 
-void Communication::processCommand(uint8_t command, uint8_t* payload, uint8_t length) {
-    // Process the received command
-    switch (command) {
-        case CMD_DO_SOMETHING:
-            // Do something with the payload
-            break;
-        case CMD_ANOTHER_COMMAND:
-            // Do something else
-            break;
-        // Add more command processing as needed
-    }
-}
-
-void Communication::sendAcknowledge(bool success) {
-    uint8_t ackPayload[1] = {success ? 0x01 : 0x00};
-    sendPacket(success ? CMD_DO_SOMETHING : CMD_ANOTHER_COMMAND, ackPayload, 1);
-}
-
-void Communucation::receivePackage(){
-     if (Serial.available() > 0) {
+void Communication::receivePackage() {
+    if (Serial.available() > 0) {
         uint8_t receivedByte = Serial.read();
 
         switch (state) {
@@ -68,12 +52,12 @@ void Communucation::receivePackage(){
             case GET_COMMAND:
                 commandByte = receivedByte;
                 payloadIndex = 0;
-                state = (packetLength > 3) ? GET_PAYLOAD : GET_CRC;
+                state = (packetLength > 2) ? GET_PAYLOAD : GET_CRC;
                 break;
 
             case GET_PAYLOAD:
                 payload[payloadIndex++] = receivedByte;
-                if (payloadIndex == packetLength - 3) {
+                if (payloadIndex == packetLength - 2) {  // Command + CRC
                     state = GET_CRC;
                 }
                 break;
@@ -86,17 +70,41 @@ void Communucation::receivePackage(){
             case GET_FOOTER:
                 if (receivedByte == PACKET_FOOTER) {
                     crc8.reset();
-                    crc8.add(&packetLength, packetLength - 1); // CRC over length, command, and payload
+                    crc8.add(&commandByte, packetLength - 1); // CRC over command and payload
                     uint8_t calculatedCRC = crc8.getCRC();
                     if (receivedCRC == calculatedCRC) {
-                        processCommand(commandByte, payload, packetLength - 3);
+                        processCommand(commandByte, payload, packetLength - 2);
                         sendAcknowledge(true);
                     } else {
                         sendAcknowledge(false);
                     }
                 }
                 state = WAIT_HEADER;
+                packetLength = 0;
+                payloadIndex = 0;
+                commandByte = 0;
+                receivedCRC = 0;
                 break;
         }
     }
+}
+
+void Communication::processCommand(uint8_t command, uint8_t* payload, uint8_t length) {
+    switch (command) {
+        case RECEIVED_CONFIG:
+            // Process RECEIVED_CONFIG
+            break;
+        case UPDATE_VOLUME:
+            // Process UPDATE_VOLUME
+            break;
+        case CMD_ANOTHER_COMMAND:
+            // Process CMD_ANOTHER_COMMAND
+            break;
+        // Add more cases as needed
+    }
+}
+
+void Communication::sendAcknowledge(bool success) {
+    uint8_t ackPayload[1] = {success ? 0x01 : 0x00};
+    sendPacket(success ? RECEIVED_CONFIG : CMD_ANOTHER_COMMAND, ackPayload, 1);
 }
