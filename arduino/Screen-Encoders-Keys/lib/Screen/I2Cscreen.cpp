@@ -146,14 +146,13 @@ void Screen::loop(){
 }
 
 
-void setEncoderValues(int *encodervalues, bools *encoderbuttons){
+void setEncoderValues(int *values, bools *buttons){
     int length = sizeof(EncoderValues) / sizeof(EncoderValues[0]);
     for (int i = 0; i < length; i++)
     {
-        EncoderValues
+        Encoders[i].encoder = values[i];
+        Encoders[i].button = buttons[i];
     }
-    
-    int EncoderValues[2]
 }
 
 void PAGE_ControlMenu()

@@ -60,7 +60,7 @@ public:
     void loop();
     void removeMenuItem(int index);
     void setMenuList(IconItem *ListItems);
-    void setEncoderValues(EncoderItem *encoders);
+    void setEncoderValues(int *values, bools *buttons);
 
 private:
     Adafruit_SSD1305 &display;
@@ -75,6 +75,7 @@ private:
     int EncoderPrevieusValues[2];
     bool EncoderButtons[2];
     IconItem *menuList;  // Use the correct declaration
+    EncoderItem *Encoders;
 
 
 
