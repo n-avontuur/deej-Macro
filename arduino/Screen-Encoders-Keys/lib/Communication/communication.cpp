@@ -1,6 +1,10 @@
 #include "Communication.h"
 #include <CRC8.h>
 
+#define PACKET_HEADER 0xAA    // Example header byte
+#define PACKET_FOOTER 0x55    // Example footer byte
+#define CMD_DO_SOMETHING 0x01 // Example command
+
 Communication::Communication() {
     // Initialization code if needed
 }
@@ -106,5 +110,5 @@ void Communication::processCommand(uint8_t command, uint8_t* payload, uint8_t le
 
 void Communication::sendAcknowledge(bool success) {
     uint8_t ackPayload[1] = {success ? 0x01 : 0x00};
-    sendPacket(success ? RECEIVED_CONFIG : CMD_ANOTHER_COMMAND, ackPayload, 1);
+    sendPacket(success ? UPDATE_VOLUME : CMD_ANOTHER_COMMAND, ackPayload, 1);
 }
