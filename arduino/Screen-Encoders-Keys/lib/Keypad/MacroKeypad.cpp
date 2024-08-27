@@ -61,37 +61,6 @@ String MacroKeypad::keyPressed(int row, int col) {
     String layoutValue = String(layout[row][col]);
     LastTimePressed = currentTime;
     currentTime = millis();
-
-    // if (LastLayoutValue != layoutValue) {
-    //     FirstTimePressed = currentTime;
-    //     FirstPress = true;
-    //     pressWait = 0;
-    // } else {
-    //     pressWait = currentTime - LastTimePressed;
-    // }
-
-    // LastLayoutValue = layoutValue;
-    
-    //pressDuration = currentTime - FirstTimePressed;
-    // if (pressWait > 100){
-    //     FirstTimePressed = currentTime;
-    //     FirstPress = true;
-    // }
-    // if (pressDuration > SPAM_PRESS) {
-    //     //if (currentTime - LastSpamPressTime >= SPAM_PRESS_DELAY) {
-    //         LastSpamPressTime = currentTime;
-    //         message = layoutValue;
-    //     //}
-    // } else if (pressDuration > LONG_PRESS) {
-    //     //if (currentTime - LastLongPressTime >= LONG_PRESS_DELAY) {
-    //         LastLongPressTime = currentTime;
-    //         message =  layoutValue;
-    //     //}
-    // } else if (FirstPress) {
-    //     //if (currentTime - LastLongPressTime >= NORMAL_PRESS_DELAY){
-    //         message = layoutValue;
-    //     // } 
-    // }
     message = layoutValue;
     return message;
 }
