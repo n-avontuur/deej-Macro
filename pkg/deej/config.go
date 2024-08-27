@@ -13,30 +13,35 @@ import (
 	"github.com/omriharel/deej/pkg/deej/util"
 )
 
-<<<<<<< HEAD
 // This is the page mapping type, so that commandos can be switched.
 type Commands struct {
 	Commando string `yaml:"Commando"`
 	Type     string `yaml:"type"`
 }
-type Page struct {
+type Page2 struct {
 	PageNr   int              `yaml:"page_nr"`
 	Commands map[int]Commands `yaml:"commands"`
-=======
-type Command struct {
-	Type    string
-	Command string
->>>>>>> 16434fe (No idea what this is at all)
 }
+
+type GridItem struct {
+	Icon    string `yaml:"icon" json:"icon"`
+	Command string `yaml:"command" json:"command"`
+}
+
+type Page struct {
+	Name           string        `yaml:"name" json:"name"`
+	Grid           [][]GridItem  `yaml:"grid,omitempty" json:"grid,omitempty"`
+	VolumeControls map[string]int `yaml:"volume_controls,omitempty" json:"volume_controls,omitempty"`
+}
+
 
 // CanonicalConfig provides application-wide access to configuration fields,
 // as well as loading/file watching logic for deej's configuration file
 type CanonicalConfig struct {
-<<<<<<< HEAD
-	key_commandos []Page `yaml:"key_commandos"`
-=======
->>>>>>> 16434fe (No idea what this is at all)
+	key_commandos []Page2 `yaml:"key_commandos"`
 	SliderMapping *sliderMap
+
+	page []Page ``
 
 	ConnectionInfo struct {
 		COMPort  string
@@ -55,11 +60,6 @@ type CanonicalConfig struct {
 
 	userConfig     *viper.Viper
 	internalConfig *viper.Viper
-<<<<<<< HEAD
-=======
-
-	CommandPages map[string]map[int]Command
->>>>>>> 16434fe (No idea what this is at all)
 }
 
 const (
