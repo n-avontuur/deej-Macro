@@ -260,8 +260,6 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 	// but most lines will end with CRLF. it may also have garbage instead of
 	// deej-formatted values, so we must check for that! just ignore bad ones
 
-	var SliderLines []string
-
 	if !expectedLinePattern.MatchString(line) {
 		fmt.Printf("Line not matching pattern")
 		return
@@ -348,50 +346,10 @@ func (sio *SerialIO) handleLine(logger *zap.SugaredLogger, line string) {
 	}
 }
 
-func handleKeyCommand(deej *Deej, page string, key string) {
-	// Access the CommandPages field from the CanonicalConfig
-	commandPages := deej.config.CommandPages
-
-	// Check if the requested page exists in the CommandPages map
-	pageCommands, ok := commandPages[page]
-	if !ok {
-		// Handle the case where the page doesn't exist
-		fmt.Printf("Page '%s' not found in CommandPages\n", page)
-		return
-	}
-
-	// Check if the requested key exists in the page's command map
-	command, ok := pageCommands[key]
-	if !ok {
-		// Handle the case where the key doesn't exist
-		fmt.Printf("Key '%d' not found in page '%s'\n", key, page)
-		return
-	}
-
-	// Execute the command
-	executeCommand(deej, command.Type, command.Command)
-}
-
-func executeCommand(deej *Deej, commandType, commandValue string) {
-	switch commandType {
-	case "ConnectBluetooth":
-		// Implement the logic to connect Bluetooth
-		fmt.Printf("Connecting Bluetooth on Windows\n")
-		deej.notifier.Notify("ConnectBluetooth", fmt.Sprintf("Device '%s' has been connected.", commandValue))
-	case "StartApplication":
-		// Implement the logic to start an application
-		fmt.Printf("Starting application '%s' on Windows\n", commandValue)
-		deej.notifier.Notify("Application Launched", fmt.Sprintf("Application '%s' has been launched.", commandValue))
-	default:
-		// Handle unknown command types
-		fmt.Printf("Unknown command type '%s' with value '%s' on Windows\n", commandType, commandValue)
-	}
-}
-
 func (sio *SerialIO) initializeConnection() error {
 	// Access the first page
-	if len(sio.deej.config.Pages) > 0 {
-		firstPage := sio.deej.config.Pages[0]
+	if len(sio.deej.config.page) > 0 {
+		firstPage := sio.deej.config.page[0]
 		fmt.Printf("First Page Name: %s\n", firstPage.Name)
 		if len(firstPage.Grid) > 0 {
 			fmt.Println("Grid content:")

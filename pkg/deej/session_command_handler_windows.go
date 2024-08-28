@@ -20,7 +20,7 @@ func (wsch *WindowsSessionCommandHandler) HandleCommand(command string) {
 
 func handleKeyCommand(deej Deej, page string, key int) {
 	// Access the CommandPages field from the CanonicalConfig
-	commandPages := deej.config.CommandPages
+	commandPages := deej.config.page
 
 	// Check if the requested page exists in the CommandPages map
 	pageCommands, ok := commandPages[page]
