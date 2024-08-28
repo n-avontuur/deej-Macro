@@ -17,6 +17,21 @@ slider_mapping:
     - rocketleague.exe
   4: discord.exe
 
+pages:
+  - name: GamingPage
+    grid:
+      - [ { icon: Discord, command: Application open discord }, { icon: BattleStageGames, command: Application open EscapeFromTarkov }, { icon: Minecraft, command: Application open Minecraft } ]
+      - [ { icon: WindowsStart, command: Press windowskey }, { icon: Spotify, command: Application open Spotify }, { icon: Outplayed, command: Application open Outplayed } ]
+      - [ { icon: Start, command: Audio Start }, { icon: Pause, command: Audio Pause }, { icon: Volume, command: Page open VolumeControl } ]
+      - [ { icon: Microfoon, command: NULL }, { icon: NULL, command: NULL }, { icon: NULL, command: NULL } ]
+  
+  - name: VolumeControlPage
+    volume_controls: 
+      spotify.exe: 75    # Represents Spotify volume percentage
+      master: 50         # Represents master volume percentage
+      opera: 60          # Represents Opera volume percentage
+
+
 # set this to true if you want the controls inverted (i.e. top is 0%, bottom is 100%)
 invert_sliders: false
 
