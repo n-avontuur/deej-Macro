@@ -6,9 +6,10 @@
 
 
 enum CommandType {
-    RECEIVED_CONFIG = 0x00,
-    UPDATE_VOLUME = 0x01,
-    CMD_ANOTHER_COMMAND = 0x02,
+    ACKNOWLEDGE         = 0x00,
+	RECEIVED_CONFIG       = 0x01,
+	UPDATE_VOLUME       = 0x02,
+	CMD_ANOTHER_COMMAND = 0x03
 };
 
 enum ReceiverState {

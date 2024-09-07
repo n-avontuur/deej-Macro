@@ -3,7 +3,6 @@
 
 #define PACKET_HEADER 0xAA    // Example header byte
 #define PACKET_FOOTER 0x55    // Example footer byte
-#define CMD_DO_SOMETHING 0x01 // Example command
 
 Communication::Communication() {
     Serial.begin(9600);
@@ -29,10 +28,10 @@ void Communication::sendPacket(uint8_t command, uint8_t* payload, uint8_t length
     packet[3 + length] = crc;
 
     // Footer
-    packet[4 + length] = PACKET_FOOTER;
-
+    packet[4 + length] = PACKET_FOOTER;  // Footer should be here
+    
     // Print packet contents for debugging
-    for (uint8_t i = 0; i < packetLength + 2; i++) {
+    for (uint8_t i = 0; i <= packetLength + 2; i++) {
         Serial.print("0x");
         if (packet[i] < 0x10) Serial.print("0");
         Serial.print(packet[i], HEX);
@@ -40,6 +39,7 @@ void Communication::sendPacket(uint8_t command, uint8_t* payload, uint8_t length
     }
     Serial.println();
 }
+
 
 void Communication::receivePackage() {
     if (Serial.available() > 0) {
@@ -78,7 +78,8 @@ void Communication::receivePackage() {
             case GET_FOOTER:
                 if (receivedByte == PACKET_FOOTER) {
                     crc8.reset();
-                    crc8.add(&packetLength, packetLength - 1); // CRC over length, command, and payload
+                    crc8.add(&commandByte, 1); // Add the command byte to CRC
+                    crc8.add(payload, packetLength - 3); // Add the payload to CRC
                     uint8_t calculatedCRC = crc8.getCRC();
                     if (receivedCRC == calculatedCRC) {
                         processCommand(commandByte, payload, packetLength - 3);
@@ -119,6 +120,14 @@ void Communication::processCommand(uint8_t command, uint8_t* payload, uint8_t le
 
 
 void Communication::sendAcknowledge(bool success) {
-    uint8_t ackPayload[1] = {success ? 0x01 : 0x00};
-    sendPacket(success ? RECEIVED_CONFIG : CMD_ANOTHER_COMMAND, ackPayload, 1);
+    uint8_t ackPayload[1];
+    ackPayload[0] = success ? 0x01 : 0x00; 
+    if (success){
+        // uint8_t ackPayload[0] = {0x01};
+        sendPacket( ACKNOWLEDGE , ackPayload, 1);
+    } else {
+        // uint8_t ackPayload[0] = {0x00};
+        sendPacket( ACKNOWLEDGE , ackPayload, 1);
+    }
+    
 }

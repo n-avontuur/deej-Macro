@@ -12,21 +12,20 @@ slider_mapping:
   0: master
   1: chrome.exe
   2: spotify.exe
-  3:
-    - pathofexile_x64.exe
-    - rocketleague.exe
+  3: rocketleague.exe
   4: discord.exe
 
-pages:
+
+# build up of command [Type] [Task] [Target]
+Pages:
   - name: GamingPage
     grid:
       - [ { icon: Discord, command: Application open discord }, { icon: BattleStageGames, command: Application open EscapeFromTarkov }, { icon: Minecraft, command: Application open Minecraft } ]
-      - [ { icon: WindowsStart, command: Press windowskey }, { icon: Spotify, command: Application open Spotify }, { icon: Outplayed, command: Application open Outplayed } ]
+      - [ { icon: WindowsStart, command: Windowskey press }, { icon: Spotify, command: Application open Spotify }, { icon: Outplayed, command: Application open Outplayed } ]
       - [ { icon: Start, command: Audio Start }, { icon: Pause, command: Audio Pause }, { icon: Volume, command: Page open VolumeControl } ]
       - [ { icon: Microfoon, command: NULL }, { icon: NULL, command: NULL }, { icon: NULL, command: NULL } ]
-  
   - name: VolumeControlPage
-    volume_controls: 
+    volume_controls:
       spotify.exe: 75    # Represents Spotify volume percentage
       master: 50         # Represents master volume percentage
       opera: 60          # Represents Opera volume percentage

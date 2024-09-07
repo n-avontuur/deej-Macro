@@ -37,10 +37,10 @@ type Page struct {
 // CanonicalConfig provides application-wide access to configuration fields,
 // as well as loading/file watching logic for deej's configuration file
 type CanonicalConfig struct {
+	Pages []Page `yaml:"Pages"`
+
 	key_commandos []Page2 `yaml:"key_commandos"`
 	SliderMapping *sliderMap
-
-	page []Page ``
 
 	ConnectionInfo struct {
 		COMPort  string
@@ -78,6 +78,7 @@ const (
 	configKeyBaudRate            = "baud_rate"
 	configKeyNoiseReductionLevel = "noise_reduction"
 	configKeykey_commandos       = "key_commandos"
+	configKeyPages               = "Pages"
 	defaultCOMPort               = "COM4"
 	defaultBaudRate              = 9600
 )
@@ -112,8 +113,11 @@ func NewConfig(logger *zap.SugaredLogger, notifier Notifier) (*CanonicalConfig, 
 	userConfig.SetDefault(configKeySliderMapping, map[string][]string{})
 	userConfig.SetDefault(configKeyInvertSliders, false)
 	userConfig.SetDefault(configKeyCOMPort, defaultCOMPort)
+
 	userConfig.SetDefault(configKeyBaudRate, defaultBaudRate)
-	userConfig.SetDefault(configKeykey_commandos, map[string][]string{})
+	// userConfig.SetDefault(CanonicalConfig, map[string][]string{})
+
+	userConfig.SetDefault(configKeyPages, []Page{})
 	internalConfig := viper.New()
 	internalConfig.AddConfigPath(internalConfigPath)
 
@@ -261,18 +265,16 @@ func (cc *CanonicalConfig) populateFromVipers() error {
 	cc.InvertSliders = cc.userConfig.GetBool(configKeyInvertSliders)
 	cc.NoiseReductionLevel = cc.userConfig.GetString(configKeyNoiseReductionLevel)
 
-	// Debugging: Print raw key_commandos content
-	//rawKeyCommandos := cc.userConfig.Get(configKeykey_commandos)
-	//cc.logger.Debugf("Raw key_commandos content: %v \n ", rawKeyCommandos)
-
-	// Add this line to load CommandPages
 	if err := cc.userConfig.UnmarshalKey(configKeykey_commandos, &cc.key_commandos); err != nil {
 		cc.logger.Warnw("Failed to unmarshal key_commandos", "error", err)
 		return fmt.Errorf("unmarshal key_commandos: %w", err)
 	}
 
-	// Debugging: Print key_commandos
-	//cc.logger.Debugf("Loaded key_commandos: %v", cc.key_commandos)
+	// Unmarshal Pages
+	if err := cc.userConfig.UnmarshalKey(configKeyPages, &cc.Pages); err != nil {
+		cc.logger.Warnw("Failed to unmarshal Pages", "error", err)
+		return fmt.Errorf("unmarshal Pages: %w", err)
+	}
 
 	return nil
 }
